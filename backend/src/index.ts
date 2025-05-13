@@ -24,15 +24,15 @@ import todoRouter from "./routes/todo.route";
 app.use("/api", todoRouter);
 
 app.get("/", (req, res) => {
-  res.send({ message: "Backend is up. == V2" });
+  res.send({ message: "Backend is up. == V3 ==" });
 });
 
 app.get("/health", (req, res) => {
-  res.send({ message: "Backend is healthy and running. == V2" });
+  res.send({ message: "Backend is healthy and running. == V3 ==" });
 });
 
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
-  console.log(`Server is up and running in the port ${PORT} . == V2`);
+  console.log(`Server is up and running in the port ${PORT} . == V3 ==`);
 });
