@@ -8,24 +8,21 @@ env:
     SERVICE_NAME: "TodoTaskDefinition-service-9eota59t"
 
 phases:
-  install-runtime:
+  install:
     commands:
       - echo Installing bun as runtime
       - curl -fsSL https://bun.sh/install | bash
       - export BUN_INSTALL="$HOME/.bun"
       - export PATH="$BUN_INSTALL/bin:$PATH"
-
-  install-packages:
-    commands:
       - echo Installing Packages
       - bun install
 
-  test:
+  pre_build:
     commands:
       - echo Perform Unit Testing
       - bun test
 
-  post_build:
+  build:
     commands:
       - echo Logging in to Amazon ECR...
       - aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $ECR_REPO
@@ -34,7 +31,7 @@ phases:
       - docker tag todo-backend:latest $ECR_REPO:latest
       - docker push $ECR_REPO:latest
 
-  cd:
+  post_build:
     commands:
       - echo Forcing new deployment on ECS service...
       - aws ecs update-service --cluster $CLUSTER_NAME --service $SERVICE_NAME --force-new-deployment --region $AWS_REGION
