@@ -2,7 +2,7 @@ import express from "express";
 import cors from "cors";
 import { config } from "dotenv";
 
-config()
+config();
 
 const app = express();
 app.use(express.json());
@@ -24,15 +24,15 @@ import todoRouter from "./routes/todo.route";
 app.use("/api", todoRouter);
 
 app.get("/", (req, res) => {
-  res.send({ message: "Backend is up." });
+  res.send({ message: "Backend is up. == V2" });
 });
 
 app.get("/health", (req, res) => {
-  res.send({ message: "Backend is healthy and running" });
+  res.send({ message: "Backend is healthy and running. == V2" });
 });
 
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
-  console.log(`Server is up and running in the port ${PORT}`);
+  console.log(`Server is up and running in the port ${PORT} . == V2`);
 });
