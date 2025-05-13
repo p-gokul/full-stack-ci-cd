@@ -1,0 +1,38 @@
+version: 0.2
+
+env:
+  parameter-store:
+    VITE_URL: "/todo_frontend/VITE_URL"
+    DISTRIBUTION_ID: "/todo_frontend/DISTRIBUTION_ID"
+    S3_BUCKET: "/todo_frontend/S3_BUCKET"
+
+phases:
+  install:
+    runtime-versions:
+      nodejs: 22
+    commands:
+      - echo Installing bun
+      - curl -fsSL https://bun.sh/install | bash
+      - export BUN_INSTALL="$HOME/.bun"
+      - export PATH="$BUN_INSTALL/bin:$PATH"
+
+  build:
+    commands:
+      - echo Building the Todo app ...
+      - cd frontend
+      - bun -v
+      - bun install
+      - bun run build
+      - echo Build completed
+
+  post_build:
+    commands:
+      - echo Deleting old contents from S3 bucket...
+      - aws s3 rm s3://$S3_BUCKET/ --recursive
+      - echo Uploading new build to S3...
+      - pwd
+      - ls -la
+      - aws s3 cp dist/ s3://$S3_BUCKET/ --recursive
+      - echo Invalidating CloudFront cache...
+      - aws cloudfront create-invalidation --distribution-id $DISTRIBUTION_ID --paths "/*"
+      - echo Deployment completed.

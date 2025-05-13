@@ -1,0 +1,1 @@
+{"root":["./src/index.ts","./src/configs/prismaconfig.ts","./src/configs/zodconfig.ts","./src/controllers/todo.controller.ts","./src/routes/todo.route.ts","./src/services/todo.service.ts"],"version":"5.8.3"}
