@@ -1,10 +1,10 @@
 version: 0.2
 
 env:
-  parameter-store:
+  variables:
     VITE_URL: "/todo_frontend/VITE_URL"
-    DISTRIBUTION_ID: "/todo_frontend/DISTRIBUTION_ID"
-    S3_BUCKET: "/todo_frontend/S3_BUCKET"
+    DISTRIBUTION_ID: "E16T2F7F7WWRZC"
+    S3_BUCKET: "test-bucket12-gokul"
 
 phases:
   install:
