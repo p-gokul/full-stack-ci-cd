@@ -3,8 +3,8 @@ version: 0.2
 env:
   variables:
     VITE_URL: "/todo_frontend/VITE_URL"
-    DISTRIBUTION_ID: "E16T2F7F7WWRZC"
-    S3_BUCKET: "test-bucket12-gokul"
+    DISTRIBUTION_ID: "EH1XNDF4M438Y"
+    S3_BUCKET: "test-bucket123-gokul"
 
 phases:
   install:
