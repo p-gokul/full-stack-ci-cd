@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Trash2 } from "lucide-react";
+import { createTodoSchema, todoArraySchema } from "@/lib/zodSchema";
 
 const URL = import.meta.env.VITE_URL;
 
@@ -23,7 +24,13 @@ const Todos: React.FC = () => {
     queryKey: ["todos"],
     queryFn: async () => {
       const response = await axios.get(`${URL}/api/todo`);
-      return response.data;
+      const parseResult = todoArraySchema.safeParse(response.data);
+
+      if (!parseResult.success) {
+        throw new Error("Invalid data received from API");
+      }
+
+      return parseResult.data;
     },
   });
 
@@ -47,8 +54,19 @@ const Todos: React.FC = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!form.title || !form.body) return alert("Fill in all fields");
-    createTodo.mutate(form);
+
+    const parsed = createTodoSchema.safeParse(form);
+
+    if (!parsed.success) {
+      const errors = parsed.error.format();
+      return alert(
+        Object.values(errors)
+          .map((err) => ("_errors" in err ? err._errors.join(", ") : ""))
+          .join("\n")
+      );
+    }
+
+    createTodo.mutate(parsed.data); // parsed.data is now type-safe and valid
     setForm({ title: "", body: "", isCompleted: false });
   };
 

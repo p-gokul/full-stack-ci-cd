@@ -16,12 +16,18 @@ phases:
       - export BUN_INSTALL="$HOME/.bun"
       - export PATH="$BUN_INSTALL/bin:$PATH"
 
+  pre_build:
+    commands:
+      - echo Installing Packages
+      - cd frontend
+      - bun install
+      - echo Running tests with Bun ...
+      - bun test
+      - echo Tests passed
+
   build:
     commands:
       - echo Building the Todo app ...
-      - cd frontend
-      - bun -v
-      - bun install
       - bun run build
       - echo Build completed
 
