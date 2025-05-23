@@ -20,19 +20,20 @@ app.use(
     optionsSuccessStatus: 200,
   })
 );
+
 import todoRouter from "./routes/todo.route";
 app.use("/api", todoRouter);
 
 app.get("/", (req, res) => {
-  res.send({ message: "Backend is up. == V3 ==" });
+  res.send({ message: "Backend is up. == V4 ==" });
 });
 
 app.get("/health", (req, res) => {
-  res.send({ message: "Backend is healthy and running. == V3 ==" });
+  res.send({ message: "Backend is healthy and running. == V4 ==" });
 });
 
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
-  console.log(`Server is up and running in the port ${PORT} . == V3 ==`);
+  console.log(`Server is up and running in the port ${PORT} . == V4 ==`);
 });

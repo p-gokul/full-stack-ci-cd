@@ -1,0 +1,50 @@
+name: Todo Backend
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "backend/*"
+
+  workflow_dispatch:
+
+env:
+  AWS_REGION: ap-northeast-1
+  ECR_REPO: 468017648450.dkr.ecr.ap-northeast-1.amazonaws.com/todo-backend
+  CLUSTER_NAME: TodoCluster
+  SERVICE_NAME: Todo-Service
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID  }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY   }}
+          aws-region: ap-northeast-1
+
+      - name: Build and push Docker image to ECR
+        working-directory: backend
+        run: |
+          aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $ECR_REPO
+          docker build -t todo-backend .
+          docker tag todo-backend:latest $ECR_REPO:latest
+          docker push $ECR_REPO:latest
+
+      - name: Force ECS redeploy
+        run: |
+          aws ecs update-service \
+            --cluster $CLUSTER_NAME \
+            --service $SERVICE_NAME \
+            --force-new-deployment \
+            --region $AWS_REGION
