@@ -36,21 +36,25 @@ jobs:
         with:
           node-version: "22"
 
-      - name: Install Bun
-        run: |
-          curl -fsSL https://bun.sh/install | bash
-          echo "BUN_INSTALL=\"$HOME/.bun\"" >> $GITHUB_ENV
-          echo "PATH=\"$HOME/.bun/bin:$PATH\"" >> $GITHUB_ENV
-
-      - name: Install Dependencies and run tests
+      - name: Install Bun and run tests
         working-directory: frontend
         run: |
-          bun Install
+          curl -fsSL https://bun.sh/install | bash
+          export BUN_INSTALL="$HOME/.bun"
+          export PATH="$BUN_INSTALL/bin:$PATH"
+          echo "Bun version:"
+          bun --version
+          echo "Installing dependencies..."
+          bun install
+          echo "Running tests..."
           bun test
 
       - name: Build the Code
         working-directory: frontend
-        run: bun run build
+        run: |
+          export BUN_INSTALL="$HOME/.bun"
+          export PATH="$BUN_INSTALL/bin:$PATH"
+          bun run build
 
       - name: Clean up old S3 contents
         run: aws s3 rm s3://$S3_BUCKET/ --recursive
