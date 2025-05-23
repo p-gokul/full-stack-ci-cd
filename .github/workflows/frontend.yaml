@@ -1,0 +1,66 @@
+name: Todo Frontend
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "frontend/**"
+
+env:
+  VITE_URL: "abc.todo.com"
+  DISTRIBUTION_ID: "ECQ5FFI2YIZC1"
+  S3_BUCKET: "my-test-bkt-123"
+
+jobs:
+  build-and-deply:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ap-northeast-1
+
+      - name: Setup Node.js 22
+        uses: actions/setup-node@v3
+        with:
+          node-version: "22"
+
+      - name: Install Bun
+        run: |
+          curl -fsSL https://bun.sh/install | bash
+          echo "BUN_INSTALL=\"$HOME/.bun\"" >> $GITHUB_ENV
+          echo "PATH=\"$HOME/.bun/bin:$PATH\"" >> $GITHUB_ENV
+
+      - name: Install Dependencies and run tests
+        working-directory: frontend
+        run: |
+          bun Install
+          bun test
+
+      - name: Build the Code
+        working-directory: frontend
+        run: bun run build
+
+      - name: Clean up old S3 contents
+        run: aws s3 rm s3://$S3_BUCKET/ --recursive
+
+      - name: Upload build to S3
+        working-directory: frontend
+        run: aws cp dist/ s3://$S3_BUCKET/ --recursive
+
+      - name: Invalidate CloudFront cache
+        run: |
+          aws cloudfront create-invalidation \
+          --distribution-id $DISTRIBUTION_ID \
+          --paths "/*"
