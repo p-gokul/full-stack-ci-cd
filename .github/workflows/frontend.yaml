@@ -6,6 +6,7 @@ on:
       - main
     paths:
       - "frontend/**"
+  workflow_dispatch:
 
 env:
   VITE_URL: "abc.todo.com"
